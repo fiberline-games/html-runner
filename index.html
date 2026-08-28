@@ -210,7 +210,7 @@
       const branch = modeSelect.value;
       
       // GitHack handles the right Content-Type headers for rendering raw HTML elements
-      const targetUrl = `https://githack.com{user}/${repo}/${branch}/index.html`;
+      const targetUrl = `https://raw.githack.com/${user}/${repo}/${branch}/index.html`;
       
       updateStatus(`Loading production proxy environment for ${user}/${repo}...`);
       const progressInterval = simulateProgress();
