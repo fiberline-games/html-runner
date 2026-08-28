@@ -67,6 +67,10 @@
       background: #1d4ed8;
     }
 
+    #openTabButton:hover {
+      background: #4b5563 !important;
+    }
+
     #status {
       margin-top: 10px;
       color: #cbd5e1;
@@ -128,6 +132,7 @@
       </select>
 
       <button id="runButton">Run site</button>
+      <button id="openTabButton" style="display:none; background:#374151;">Open in New Tab</button>
     </div>
 
     <div id="status">
@@ -139,20 +144,29 @@
     </div>
   </header>
 
-  <iframe id="siteFrame" src="about:blank"></iframe>
+  <iframe id="siteFrame" src="about:blank" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"></iframe>
 
   <script>
     const repoInput = document.getElementById('repoInput');
     const modeSelect = document.getElementById('modeSelect');
     const runButton = document.getElementById('runButton');
+    const openTabButton = document.getElementById('openTabButton');
     const statusText = document.getElementById('status');
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
     const siteFrame = document.getElementById('siteFrame');
 
+    let currentTargetUrl = null;
+
     runButton.addEventListener('click', loadGitHubSite);
     repoInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') loadGitHubSite();
+    });
+
+    openTabButton.addEventListener('click', () => {
+      if (currentTargetUrl) {
+        window.open(currentTargetUrl, '_blank', 'noopener,noreferrer');
+      }
     });
 
     function updateStatus(text, isError = false) {
@@ -211,7 +225,9 @@
       
       // GitHack handles the right Content-Type headers for rendering raw HTML elements
       const targetUrl = `https://raw.githack.com/${user}/${repo}/${branch}/index.html`;
-      
+      currentTargetUrl = targetUrl;
+      openTabButton.style.display = 'inline-block';
+
       updateStatus(`Loading production proxy environment for ${user}/${repo}...`);
       const progressInterval = simulateProgress();
 
@@ -220,7 +236,7 @@
 
       siteFrame.onload = () => {
         finishProgress(progressInterval);
-        updateStatus(`Displaying environment via target: ${targetUrl}`);
+        updateStatus(`Displaying environment via target: ${targetUrl}. If in-page navigation doesn't work, use "Open in New Tab" — some sites' scripts break inside an embedded iframe.`);
       };
     }
   </script>
